@@ -1,0 +1,1 @@
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/Test.dir/link.d CMakeFiles/Test.dir/allocate.c.o -o Test  -lm

@@ -1,0 +1,3 @@
+/home/vinz/Code/AVXC/FoundMySelf/CMakeFiles/Test.dir
+/home/vinz/Code/AVXC/FoundMySelf/CMakeFiles/edit_cache.dir
+/home/vinz/Code/AVXC/FoundMySelf/CMakeFiles/rebuild_cache.dir
