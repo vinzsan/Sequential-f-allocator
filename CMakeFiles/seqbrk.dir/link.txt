@@ -1,0 +1,2 @@
+/usr/bin/ar qc libseqbrk.a CMakeFiles/seqbrk.dir/allocate.c.o
+/usr/bin/ranlib libseqbrk.a

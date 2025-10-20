@@ -41,6 +41,10 @@ static void *h = NULL,*t = NULL;
 void *test_expand(size_t n){
   if(h == NULL){
     h = s_brk(NULL);
+    if(h == (void *)-1 || h == NULL){
+      fprintf(stderr,"ERROR : failed to initialize head\n");
+      _exit(1);
+    }
     t = (char *)h + ALIGN(n);
     s_brk(t);
     return h;
@@ -55,7 +59,7 @@ void *test_expand(size_t n){
   return old_brk;
 }
 
-NODE_t *head = NULL,*tail = NULL;
+static NODE_t *head = NULL,*tail = NULL;
 
 NODE_t *src_block_free(size_t n){
   NODE_t *current = head;
@@ -118,23 +122,20 @@ void free_with_metadata(void *ptr){
 // }
 
 int main(){
-  char *heap_satu = (char *)test_expand(1024);
-  printf("Current : %p\n",heap_satu);
-  const char *someth = "Hello world\n";
-  for(int i = 0;i < strlen(someth) + 1;i++){
-    heap_satu[i] = someth[i];
-  }
-  printf("PTR : %p isinya adalah : %s\n",heap_satu,heap_satu);
-  printf("Seconds heap : %p\n",test_expand(1024));
-  printf("Third heap : %p\n",test_expand(32));
-  // ------------------------------------------------
-  char *heap_metadata_new = expand_with_metadata(1024);
-  printf("HEAP metadata : %p\n",heap_metadata_new);
-  printf("HEAP seconds  : %p\n",expand_with_metadata(32));
-  //free_with_metadata(heap_metadata_new);
-  void *heap_seconds = expand_with_metadata(1024);
-  free_with_metadata(heap_seconds);
-  printf("HEAP third    : %p\n",heap_seconds); // DUMMY free test undefined ptr 
-  free_with_metadata(heap_metadata_new);
+
+  char *ptr = expand_with_metadata(1024);
+  printf("PTR : %p\n",ptr);
+  char *ptr1 = expand_with_metadata(1024);
+  printf("PTR : %p\n",ptr1);
+  free_with_metadata(ptr);
+  free_with_metadata(ptr1);
+  printf("PTR : %p\n",expand_with_metadata(1024));
+  printf("PTR : %p\n",expand_with_metadata(32));
+  char *ptr3 = expand_with_metadata(10);
+  NODE_t *dummy = ((NODE_t *)((char *)ptr3 - sizeof(NODE_t)));
+  printf("DUMMY SIZE : %zu\nFLAGS : %d\n",dummy->METADATA.size,dummy->METADATA.is_free);
+  free_with_metadata(ptr3);
+  printf("FLAGS : %d\n",dummy->METADATA.is_free);
+  printf("PTR : %p\n",ptr);
   return 0;
 }
