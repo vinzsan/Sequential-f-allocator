@@ -93,8 +93,7 @@ Test: /usr/lib/Scrt1.o \
   /usr/lib/ld-linux-x86-64.so.2 \
   /usr/lib/libc.so.6 \
   /usr/lib/libc_nonshared.a \
-  CMakeFiles/Test.dir/main.c.o \
-  libseqbrk.a
+  CMakeFiles/Test.dir/allocate.c.o
 
 
 /usr/lib/libc.so.6:
@@ -127,8 +126,6 @@ Test: /usr/lib/Scrt1.o \
 
 /usr/include/sys/cdefs.h:
 
-libseqbrk.a:
-
 /usr/include/strings.h:
 
 /usr/include/stdlib.h:
@@ -136,8 +133,6 @@ libseqbrk.a:
 /usr/include/stdint.h:
 
 /usr/include/linux/errno.h:
-
-CMakeFiles/Test.dir/main.c.o:
 
 /usr/include/gnu/stubs.h:
 
@@ -198,6 +193,8 @@ allocate.c:
 /usr/include/bits/timesize.h:
 
 /usr/include/bits/endian.h:
+
+CMakeFiles/Test.dir/allocate.c.o:
 
 /usr/include/bits/types/__sigset_t.h:
 

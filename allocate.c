@@ -110,7 +110,6 @@ void free_with_metadata(void *ptr){
     NODE_t *prev = head;
     while(prev && prev->METADATA.next != free_ptr) prev = prev->METADATA.next;
     if(prev) prev->METADATA.next = NULL;
-    tail = prev;
   }
 }
 // void free_with_metadata(void *ptr){

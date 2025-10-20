@@ -14,7 +14,7 @@
 
 .align 16 
 
-# struct metadata
+# struct metadata same asf union { struct anon {} };
 
   HEAD_METADATA: .quad 0 
   TAIL_METADATA: .quad 0
@@ -25,7 +25,7 @@ NODE_T:
   .quad 0
   .long 0
   .long 0 # padding
-  .quad 0 # Next struct / neighbours
+  .quad 0 # Next struct / neighbours 
 
 .section .text
 .global _start
@@ -101,10 +101,13 @@ src_block_free:
 .align 16 
 
   mov rbx,[rip + HEAD_METADATA]
+  cmp rbx,0
+  je src_block_free.IF2
 
 src_block_free.FOR1:
 
-  cmp [rbx + NODE_T_IS_FREE],1
+  xor rcx,rcx
+  cmp [rbx + NODE_T_IS_FREE],rcx
   je src_block_free.IF1
   cmp [rbx + NODE_T_SIZE],r13
   jnb src_block_free.IF1
@@ -147,34 +150,77 @@ expand_metadata:
   push rbx
   push rcx
   push r11
+  push r12
 
   mov rsi,0xF # align ((x + 0xF) & ~0xF)
   not rsi
   add rdi,15
   and rdi,rsi
 
-  mov rdi,rdi
-  call src_block_free
+  mov r12,rdi
 
-  sub rsp,NODE_T_SIZEOF
-  lea rbx,[rsp]
+  call src_block_free
 
   mov rbx,rax
 
   cmp rbx,0
-  jg 
+  jne expand_metadata.IF1
 
-  mov [rbx + NODE_T_IS_FREE],0
+  mov rdi,r12
+  add rdi,NODE_T_SIZEOF
+  call expand_brk
+
+  mov r11,rax
+
+  test rax,rax
+  jne expand_metadata.IF2
+  
+  mov rdi,NODE_T_SIZEOF
+  call expand_brk
+
+  mov rcx,rax
+
+  mov [rcx + NODE_T_SIZE],r12
+  xor rax,rax
+  mov [rcx + NODE_T_IS_FREE],rax
+  xor rax,rax
+  mov [rcx + NODE_T_NEXT],rax
+
+  mov rax,[rip + HEAD_METADATA]
+  cmp rax,0
+  je expand_metadata.IF3
+
+  mov [rip + TAIL_METADATA + NODE_T_NEXT],rcx
+  mov [rip + TAIL_METADATA],rcx
+
+  mov rax,[rcx + NODE_T_SIZEOF]
 
   leave
   ret
 
-  cmp rbx,0
-  jg expand_metadata.IF1
-
 expand_metadata.IF1:
 
-  cmp rbx,
+  mov rax,0
+  mov [rbx + NODE_T_IS_FREE],rax
+
+  mov rax,[rbx + NODE_T_SIZEOF]
+  leave
+
+  ret
+
+expand_metadata.IF2:
+
+  xor rax,rax
+  leave
+
+  ret
+
+expand_metadata.IF3:
+
+  mov rax,[rcx + NODE_T_SIZEOF]
+  leave
+
+  ret
 
 
 _start:
@@ -185,11 +231,22 @@ _start:
   mov rbp,rsp
   sub rsp,32
 
+  xor rax,rax
+
+  mov QWORD PTR [rip + HEAD_METADATA],rax
+  mov QWORD PTR [rip + TAIL_METADATA],rax
+
   mov rdi,1024
-  call expand_brk
+  call expand_metadata
 
   mov rdi,32
-  call expand_brk
+  call expand_metadata
+
+  mov rdi,1024
+  call expand_metadata
+
+  mov rdi,128
+  call expand_metadata
 
   leave
   mov rax,60
