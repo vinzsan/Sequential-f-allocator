@@ -1,0 +1,3 @@
+/home/vinz/Usaha/CMakeFiles/Test.dir
+/home/vinz/Usaha/CMakeFiles/edit_cache.dir
+/home/vinz/Usaha/CMakeFiles/rebuild_cache.dir
